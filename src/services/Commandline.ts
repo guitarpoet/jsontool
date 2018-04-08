@@ -28,9 +28,10 @@ export class Commandline extends BaseService {
 
         this.cmd = readline.createInterface({
             input: process.stdin,
-            output: process.stdout,
-            prompt: DEFAULT_PROMPT
+            output: process.stdout
         })
+
+        this.cmd.setPrompt(DEFAULT_PROMPT);
 
         let self = this;
         this.lines = new Subject<string>();
