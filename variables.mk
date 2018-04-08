@@ -8,4 +8,4 @@ DIST_FILES := $(subst $(SRC),$(DIST),$(ALL_SRC:.ts=.js))
 TSC_OPTIONS := --sourceMap true --module es6 --moduleResolution node --target ES2018 --allowJs true --experimentalDecorators true --module commonjs --lib es6
 
 dist/%.js: src/%.ts
-	$(SILENT) $(TSC) $(TSC_OPTIONS) --outDir $(shell dirname $@) $<
+	$(TSC) $(TSC_OPTIONS) --outDir $(DIST) $<

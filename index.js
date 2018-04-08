@@ -11,4 +11,4 @@ const { MainApplication } = require("./dist/Main");
 
 let app = new MainApplication();
 
-app.run();
+app.run(process.argv);
