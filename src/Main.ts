@@ -7,8 +7,11 @@
  */
 
 import { debug } from "hot-pepper-jelly";
-import { BaseService, Commandline, Output, JavaScript } from "./services";
+import { BaseService, Commandline, Output, JavaScript, PagerFactory } from "./services";
 import { ECHO_MODE, SHELL_MODE } from "./core/Constants";
+import { Observable } from "rxjs/Observable";
+import "rxjs/add/operator/map";
+import "rxjs/add/operator/mergeMap";
 
 export class MainApplication extends BaseService {
 
@@ -24,13 +27,10 @@ export class MainApplication extends BaseService {
         return this.service<JavaScript>("javascript");
     }
 
-    public appendAndTryExecute(text:string):void {
+    public appendAndTryExecute(text:string):any {
         if(this.js().append(text).runnable()) {
             try {
-                console.info(this.js().execute());
-            }
-            catch(e) {
-                console.error(e);
+                return this.js().execute();
             }
             finally {
                 this.cmd().defaultPrompt();
@@ -47,20 +47,25 @@ export class MainApplication extends BaseService {
 
         let mode:string = args.length? args[0]: SHELL_MODE;
 
-        let g:any = global;
-        g.history = (pos:number = -1):Array<string> | string => {
-            return this.js().history(pos);
-        }
-
         let self = this;
-        this.cmd().prompt().subscribe({
-            next(answer) {
-                if(mode == ECHO_MODE) {
-                    self.echo(answer);
+        this.cmd().prompt().map((answer:string) => {
+            if(mode == SHELL_MODE) {
+                try {
+                    return this.appendAndTryExecute(answer);
+                } catch(e) {
+                    // We get an error here, let's just return it
+                    return e;
                 }
-                if(mode == SHELL_MODE) {
-                    self.appendAndTryExecute(answer);
-                }
+            }
+
+            return answer;
+        }).flatMap(result => {
+            // Let's use the pager process the result
+            return this.service<PagerFactory>("pagers")
+                .getPager().process(result);
+        }).subscribe({
+            error(e) {
+                console.error(e);
             }
         });
     }

@@ -146,7 +146,7 @@ export class Commandline extends BaseService {
         });
     }
 
-    public prompt(): Observable<string> {
+    public prompt(): Subject<string> {
         return this.lines;
     }
 }

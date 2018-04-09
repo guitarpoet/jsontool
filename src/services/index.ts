@@ -9,4 +9,5 @@ import { global_registry } from "hot-pepper-jelly";
 export { Commandline } from "./Commandline";
 export { Output } from "./Output";
 export { JavaScript } from "./JavaScriptEngine";
+export { PagerFactory } from "./PagerFactory";
 export { BaseService, services } from "../core/BaseService";

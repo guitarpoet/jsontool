@@ -21,7 +21,17 @@ export class JavaScript extends BaseService {
 
     public constructor() {
         super();
-        this.context = extend({}, global);
+        this.context = extend({
+            history: (pos:number = -1):Array<string> | string => {
+                return this.history(pos);
+            },
+            service: (name:string):BaseService => {
+                return this.service(name);
+            },
+            pagers: ():any => {
+                return this.service("pagers");
+            }
+        }, global);
         vm.createContext(this.context);
     }
 
